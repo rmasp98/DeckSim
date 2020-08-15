@@ -1,0 +1,87 @@
+
+
+Website for hosting various games
+ - Will need to be web sockets to update all webpages based on other peoples interactions
+ - Will need authentication
+ - When any buttons are pushed, reject all other input until resolved or after some time (e.g. 3 seconds)
+ - Need ability to undo certain number of actions
+ - Each screen needs to remember state as will switch between decks and other parts of the site
+ - Website should be enitrely based on game state (all buttons update state in web server and refresh local state)
+
+
+ - Initiate action sends block and returns 200 once free (if timeout reached [5 seconds?] show error stating currently in use) 
+   - draw
+   - view
+   - etc.
+ - End action sends an unlock which will release the next lock attempt in queue
+   - draw resolve (e.g. go to discard)
+   - save or close after a view action
+ - Other actions send a block but will release itself once finished:
+   - Shuffle
+   - discard
+
+
+Tree:
+ - Games
+   - Top bar
+     - My Deck (disabled if not relavent)
+     - notification (e.g. another user drew a card that you can see)
+   - Decks (will display all decks for game)
+     - Options (start off being configured in backend)
+       - Visible discard
+       - Hidden view of card
+       - Random/Ordered
+       - Set maximum numbers of each card
+     - View remaining cards (for deck and discard)
+       - add, remove and draw specific cards from each deck
+       - will be list of card names with numbers, plus and minus and draw buttons
+     - Draw (button for 1 and button for X)
+       - Display Card
+       - Actions (available based on options)
+         - Move to discard
+         - Move to hand
+         - Remove from game
+         - Go back on top
+         - Go to bottom
+     - See my hand (will just be another deck but private)
+     - Discard X cards
+     - Shuffle
+   - Dice
+     - Options
+     - Roll all dice
+     - Choose single dice to re-roll
+     - List of dice to add remove
+
+
+
+REST
+key
+cardid = is unique
+
+
+GET games - get list of games
+GET games/{game} - list of deckids and diceids
+GET decks/{deckid} - get deck details (enabled functionality) and stacks
+PUT decks/{deckid}/shuffle(?stack={stack}) - shuffles discard into main stack. If stack defined then just shuffles that stack
+GET decks/{deckid}/{stack} - returns list of all cardtypes and number of each
+PUT decks/{deckid}/{stack}?card={cardtype}&n={number} - add n cards of cardtype to stack of deckid and then shuffle
+DELETE decks/{deckid}/{stack}?card=(cardtype)&n={number} - remove n cards of cardtype from stack and then shuffle
+GET decks/{deckid}/{stack}/draw?n={x} - get top card x cards in stack
+GET decks/{deckid}/card/{cardid} - get card details
+
+
+
+MODEL
+ - card
+   - name
+   - description?
+   - image
+ - stack
+   - card (list)
+ - deck
+   - stacks (dict: name:stack)
+   - cards
+   - maxCards (dict: cardType:num)
+   - handId - hand id deck associated with (-1 is none)
+   - options (dict) - dunno yet
+
